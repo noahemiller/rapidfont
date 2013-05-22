@@ -13,82 +13,86 @@ if offset or offset == 0:
         Message("Numbers only.")
     else:
         font = CurrentFont()
-        weight = int(font["B"].box[2])
-        roundWidth=int(font["A"].box[2])
+        weight = int(font["straight"].box[2])
+        roundWidth=int(font["round"].box[2])
         descender = font.info.descender
-        buildG = ['b','d','p','q','o','h','i','l','n','m','u']
+        xheight = font.info.xHeight
+        ascender = font.info.ascender
+        buildG = ['b','d','p','q','o','h','i','l','n','m','u','test']
 
         for glyph in buildG:
             font.newGlyph(glyph)
-
+            
+       
+        
         b = font['b']
-        b.appendComponent('B')
-        b.appendComponent('A',(weight+offset-font['A'].leftMargin,0))
-        b.rightMargin=font['A'].rightMargin
-        b.leftMargin=font['B'].rightMargin
+        b.appendComponent('straight')
+        b.appendComponent('round',(weight+offset-font['round'].leftMargin,0))
+        b.rightMargin=font['round'].rightMargin
+        b.leftMargin=font['straight'].rightMargin
 
         d = font['d']
-        d.appendGlyph(font['A'])
+        d.appendGlyph(font['round'])
         d.scale((-1,1))
         d.move((roundWidth,0))
-        d.appendComponent('B',(roundWidth+offset-font['A'].leftMargin,0))
-        d.rightMargin=font['B'].rightMargin
-        d.leftMargin=font['A'].rightMargin
+        d.appendComponent('straight',(roundWidth+offset-font['round'].leftMargin,0))
+        d.rightMargin=font['straight'].rightMargin
+        d.leftMargin=font['round'].rightMargin
 
         p = font['p']
-        p.appendComponent('B',(0,descender))
-        p.appendComponent('A',(weight+offset-font['A'].leftMargin,0))
-        p.rightMargin=font['A'].rightMargin
-        p.leftMargin=font['B'].rightMargin
+        p.appendComponent('straight',(0,descender))
+        p.appendComponent('round',(weight+offset-font['round'].leftMargin,0))
+        p.rightMargin=font['round'].rightMargin
+        p.leftMargin=font['straight'].rightMargin
 
         q = font['q']
-        q.appendGlyph(font['A'])
+        q.appendGlyph(font['round'])
         q.scale((-1,1))
         q.move((roundWidth,0))
-        q.appendComponent('B',(roundWidth+offset-font['A'].leftMargin,descender))
-        q.rightMargin=font['B'].rightMargin
-        q.leftMargin=font['A'].rightMargin
+        q.appendComponent('straight',(roundWidth+offset-font['round'].leftMargin,descender))
+        q.rightMargin=font['straight'].rightMargin
+        q.leftMargin=font['round'].rightMargin
 
         o = font['o']
-        o.appendGlyph(font['A'])
-        o.scale((-1,1))
-        o.move((roundWidth,0))
-        o.appendComponent('A',(roundWidth+offset,0))
-        o.rightMargin=font['A'].rightMargin
-        o.leftMargin=font['A'].rightMargin
+        o.appendGlyph(font['round'])
+        o.scale((-1,-1))
+        o.move((roundWidth,xheight))
+        o.appendComponent('round',(roundWidth+offset,0))
+        o.rightMargin=font['round'].rightMargin
+        o.leftMargin=font['round'].rightMargin
         
         h = font['h']
-        h.appendGlyph(font['B'])
-        h.appendComponent('C',(weight+offset,0))
-        h.rightMargin=font['C'].rightMargin
-        h.leftMargin=font['B'].rightMargin
+        h.appendGlyph(font['straight'])
+        h.appendComponent('roundleg',(weight+offset,0))
+        h.rightMargin=font['roundleg'].rightMargin
+        h.leftMargin=font['straight'].rightMargin
         
         i = font['i']
-        i.appendGlyph(font['B'])
-        i.scale((1,0.666))
-        i.rightMargin=font['B'].rightMargin
-        i.leftMargin=font['B'].rightMargin
+        i.appendGlyph(font['straight'])
+        i.move((0,(xheight-ascender)))
+        i.rightMargin=font['straight'].rightMargin
+        i.leftMargin=font['straight'].rightMargin
         
         l = font['l']
-        l.appendGlyph(font['B'])
-        l.rightMargin=font['B'].rightMargin
-        l.leftMargin=font['B'].rightMargin
+        l.appendGlyph(font['straight'])
+        l.rightMargin=font['straight'].rightMargin
+        l.leftMargin=font['straight'].rightMargin
         
         
         n = font['n']
-        n.appendGlyph(font['B'])
-        n.scale((1,0.666))
-        n.appendComponent('C',(weight+offset,0))
-        n.rightMargin=font['C'].rightMargin
-        n.leftMargin=font['B'].rightMargin
+        n.appendGlyph(font['straight'])
+        n.move((0,(xheight-ascender)))
+        n.appendComponent('roundleg',(weight+offset,0))
+        n.rightMargin=font['roundleg'].rightMargin
+        n.leftMargin=font['straight'].rightMargin
         
         m = font['m']
-        m.appendGlyph(font['B'])
-        m.scale((1,0.666))
-        m.appendComponent('C',(weight+offset*3,0))
-        m.appendComponent('C',(weight+font['C'].box[2]+offset*10,0))
-        m.rightMargin=font['C'].rightMargin
-        m.leftMargin=font['B'].rightMargin
+        m.appendGlyph(font['straight'])
+        m.move((0,(xheight-ascender)))
+        m.appendComponent('roundleg',(weight+offset*3,0))
+        m.appendComponent('roundleg',(weight+font['roundleg'].box[2]+offset*10,0))
+        m.rightMargin=font['roundleg'].rightMargin
+        m.leftMargin=font['straight'].rightMargin
         
         
         for glyph in buildG:
