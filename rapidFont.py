@@ -1,8 +1,40 @@
 from robofab.world import CurrentGlyph,CurrentFont
 from robofab.interface.all.dialogs import AskString, Message
-import sys
+import sys, math
 
 font = CurrentFont()
+
+#trigonometry helper functions
+def mySlope(px,py,qx,qy):
+    theSlope = 0
+    if px == qx and py == qy:
+        sys.exit('Error: trying to calculate slope from single point')
+    elif px == qx:
+        theSlope = float("+inf")
+    elif py == qy:
+        theSlope = 0
+    else:
+        theSlope = float((qy - py)) / float((qx - px))
+    return theSlope
+
+def yIntercept(px, py, mp):
+    yInter = py - mp * px
+    return yInter
+    
+def nSlope(mp):
+    normal = -1 / mp
+    return normal
+    
+def lineX(mp, cp, mq, cq):
+    if mp == mq:
+        sys.exit('Error: trying to calculate intersect of parallels')
+    elif cp == cq:
+        lineX = (0, cp)
+    else:
+        myX = int((cp - cq) / (mq - mp))
+        myY = int(mp * myX + cp)
+        lineX = [myX, myY]
+    return lineX
 
 #testing to make sure the required components are present
 meta = ['round','roundleg','straight']
@@ -28,7 +60,8 @@ if offset or offset == 0:
         descender = font.info.descender
         xheight = font.info.xHeight
         ascender = font.info.ascender
-        buildG = ['a','b','c','d','h','i','l','m','n','o','p','q','u','space','straightX','straightD']
+        overshoot = abs(int(font["round"].box[1]))
+        buildG = ['a','b','c','d','h','i','l','m','n','o','p','q','u','v','space','straightX','straightD']
 
         for glyph in buildG:
             font.newGlyph(glyph)
@@ -162,6 +195,32 @@ if offset or offset == 0:
         m.rightMargin=font['roundleg'].rightMargin
         m.leftMargin=font['straight'].rightMargin
         
+        v = font['v']
+        A = (int((n.box[2]-n.rightMargin)/2),-overshoot)
+        B = (int(n.box[2]-n.rightMargin+weight*0.33),xheight)
+        abSlp = mySlope(A[0],A[1],B[0],B[1])
+        bhSlp = nSlope(abSlp)
+        Hx = B[0] - math.cos(math.atan(abs(bhSlp))) * weight * 0.85
+        Hy = B[1] + math.sin(math.atan(abs(bhSlp))) * weight * 0.85
+        hYinter = yIntercept(Hx,Hy,abSlp)
+        C = (int((B[1] - hYinter)/abSlp), B[1])
+        E = (int((A[0]-(C[0]-A[0]))*1.05),xheight)
+        F = (A[0]-(B[0]-A[0]),xheight)
+        cYinter = yIntercept(C[0],C[1],abSlp)
+        eYinter = yIntercept(E[0],E[1],-abSlp)
+        D = lineX(abSlp,cYinter,-abSlp,eYinter)
+        D[1] = int(D[1] - weight*0.05)
+        pen = v.getPen()
+        pen.moveTo(A)
+        pen.lineTo(B)
+        pen.lineTo(C)
+        pen.lineTo(D)
+        pen.lineTo(E)
+        pen.lineTo(F)
+        pen.closePath()
+        v.update()
+        v.leftMargin = 0
+        v.rightMargin = 0
         
         for glyph in buildG:
             for comp in font[glyph].components:
