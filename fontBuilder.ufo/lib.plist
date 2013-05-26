@@ -34,27 +34,6 @@
 		<dict>
 			<key>ascending</key>
 			<array>
-				<string>a</string>
-				<string>b</string>
-				<string>c</string>
-				<string>d</string>
-				<string>e</string>
-				<string>f</string>
-				<string>h</string>
-				<string>i</string>
-				<string>l</string>
-				<string>m</string>
-				<string>n</string>
-				<string>o</string>
-				<string>p</string>
-				<string>q</string>
-				<string>t</string>
-				<string>u</string>
-				<string>v</string>
-				<string>space</string>
-				<string>straightX</string>
-				<string>straightD</string>
-				<string>shortcrossbar</string>
 				<string>round</string>
 				<string>roundleg</string>
 				<string>straight</string>
@@ -66,24 +45,6 @@
 	</array>
 	<key>public.glyphOrder</key>
 	<array>
-		<string>a</string>
-		<string>b</string>
-		<string>c</string>
-		<string>d</string>
-		<string>e</string>
-		<string>f</string>
-		<string>h</string>
-		<string>i</string>
-		<string>l</string>
-		<string>m</string>
-		<string>n</string>
-		<string>o</string>
-		<string>p</string>
-		<string>q</string>
-		<string>t</string>
-		<string>u</string>
-		<string>v</string>
-		<string>space</string>
 		<string>round</string>
 		<string>roundleg</string>
 		<string>straight</string>

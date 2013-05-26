@@ -66,9 +66,7 @@ if offset or offset == 0:
 
         for glyph in buildG:
             font.newGlyph(glyph)
-            
-        round = font['round']    
-        roundleg = font['roundleg']    
+               
         #building an x-height straight by moving the two highest points of the straight down
         sX = font['straightX']
         sX.appendGlyph(font['straight'])
@@ -115,7 +113,7 @@ if offset or offset == 0:
         sD.leftMargin=font['straight'].leftMargin
         sD.mark = (1,.7,0,1)
 
- #building a descender straight by moving the two lowest points of the straight up
+        #building a short crossbar
         scb = font['shortcrossbar']
         scb.appendGlyph(font['crossbar'])
         scb.scale((.75,1))
@@ -145,31 +143,26 @@ if offset or offset == 0:
         c.rightMargin=font['round'].rightMargin - 10
 
         d = font['d']
-        d.appendGlyph(font['round'])
-        d.scale((-1,1))
-        d.move((roundWidth,0))
+        d.appendComponent('round',(roundWidth,int(font["round"].box[3])-overshoot),(-1,-1))
         d.appendComponent('straight',(roundWidth+offset-font['round'].leftMargin-weight/2,0))
         d.rightMargin=font['straight'].rightMargin
         d.leftMargin=font['round'].rightMargin
 
         e = font['e']
-        e.appendGlyph(font['crossbar'])
-        e.move((0,-(xheight/3)))
-        round.scale((-1,1))
-        round.move((roundWidth,0))
         e.appendGlyph(font['round'])
-        round.move((-roundWidth,0))
-        round.scale((-1,1))
+        e.scale((-1,1))
+        e.move((roundWidth,0))
+        e.appendComponent('crossbar',(0,-xheight/3))
+        d.rightMargin=font['straight'].rightMargin
+        d.leftMargin=font['round'].rightMargin
         
 
         f = font['f']
-        f.appendGlyph(font['roundleg'])
-        f.move((0,(ascender-xheight)))
-        f.scale((-1,1))
         f.appendGlyph(font['straightX'])
-        f.leftMargin=font['round'].rightMargin
-        f.rightMargin=font['round'].rightMargin - 10
+        f.appendComponent('roundleg',(roundLegWidth,ascender-xheight),(-1,1))
         f.appendGlyph(font['shortcrossbar'])
+        f.leftMargin=font['straight'].rightMargin
+        f.rightMargin=font['round'].rightMargin - 10
         
         p = font['p']
         p.appendComponent('straightD')
@@ -224,9 +217,7 @@ if offset or offset == 0:
         m.leftMargin=font['straight'].rightMargin
 
         t = font['t']
-        t.appendGlyph(font['roundleg'])
-        t.scale((-1,-1))
-        t.move((roundLegWidth,((xheight/3)*2)))
+        t.appendComponent('roundleg',(roundLegWidth,xheight/3*2),(-1,-1))
         t.appendComponent('straightX')
         t.move((0,(xheight/3)))
         t.appendComponent('shortcrossbar')
