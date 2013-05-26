@@ -117,6 +117,7 @@ if offset or offset == 0:
         scb = font['shortcrossbar']
         scb.appendGlyph(font['crossbar'])
         scb.scale((.75,1))
+        scb.mark = (1,.7,0,1)
 
 
         space = font['space']
@@ -153,8 +154,8 @@ if offset or offset == 0:
         e.scale((-1,1))
         e.move((roundWidth,0))
         e.appendComponent('crossbar',(0,-xheight/3))
-        d.rightMargin=font['straight'].rightMargin
-        d.leftMargin=font['round'].rightMargin
+        e.rightMargin=font['round'].rightMargin - 10
+        e.leftMargin=font['round'].rightMargin
         
 
         f = font['f']
@@ -227,11 +228,11 @@ if offset or offset == 0:
         B = (int(n.box[2]-n.rightMargin+weight*0.33),xheight)
         abSlp = mySlope(A[0],A[1],B[0],B[1])
         bhSlp = nSlope(abSlp)
-        Hx = B[0] - math.cos(math.atan(abs(bhSlp))) * weight * 0.85
-        Hy = B[1] + math.sin(math.atan(abs(bhSlp))) * weight * 0.85
+        Hx = B[0] - math.cos(math.atan(abs(bhSlp))) * weight * 0.5
+        Hy = B[1] + math.sin(math.atan(abs(bhSlp))) * weight * 0.5
         hYinter = yIntercept(Hx,Hy,abSlp)
         C = (int((B[1] - hYinter)/abSlp), B[1])
-        E = (int((A[0]-(C[0]-A[0]))*1.05),xheight)
+        E = (int((A[0]-(C[0]-A[0]))+weight*0.5),xheight)
         F = (A[0]-(B[0]-A[0]),xheight)
         cYinter = yIntercept(C[0],C[1],abSlp)
         eYinter = yIntercept(E[0],E[1],-abSlp)
