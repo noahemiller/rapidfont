@@ -57,6 +57,7 @@ if offset or offset == 0:
     else:
         weight = int(font["straight"].box[2])
         roundWidth=int(font["round"].box[2])
+        roundLegWidth=int(font["roundleg"].box[2])
         descender = font.info.descender
         xheight = font.info.xHeight
         ascender = font.info.ascender
@@ -155,13 +156,17 @@ if offset or offset == 0:
         e.appendGlyph(font['crossbar'])
         e.move((0,-(xheight/3)))
         round.scale((-1,1))
+        round.move((roundWidth,0))
         e.appendGlyph(font['round'])
+        round.move((-roundWidth,0))
         round.scale((-1,1))
-        e.leftMargin=font['round'].rightMargin
-        e.rightMargin=font['round'].rightMargin - 10
+        
 
         f = font['f']
-        f.appendGlyph(font['straight'])
+        f.appendGlyph(font['roundleg'])
+        f.move((0,(ascender-xheight)))
+        f.scale((-1,1))
+        f.appendGlyph(font['straightX'])
         f.leftMargin=font['round'].rightMargin
         f.rightMargin=font['round'].rightMargin - 10
         f.appendGlyph(font['shortcrossbar'])
@@ -219,13 +224,13 @@ if offset or offset == 0:
         m.leftMargin=font['straight'].rightMargin
 
         t = font['t']
-        t.appendGlyph(font['straightX'])
+        t.appendGlyph(font['roundleg'])
+        t.scale((-1,-1))
+        t.move((roundLegWidth,((xheight/3)*2)))
+        t.appendComponent('straightX')
         t.move((0,(xheight/3)))
-        t.appendGlyph(font['shortcrossbar'])
-        t.rotate(180)
-        t.rightMargin = n.leftMargin
-        t.leftMargin = n.rightMargin
-                
+        t.appendComponent('shortcrossbar')
+                        
         v = font['v']
         A = (int((n.box[2]-n.rightMargin)/2),-overshoot)
         B = (int(n.box[2]-n.rightMargin+weight*0.33),xheight)
