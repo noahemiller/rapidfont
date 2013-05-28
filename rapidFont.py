@@ -69,9 +69,7 @@ if offset or offset == 0:
 
         for glyph in buildG:
             font.newGlyph(glyph)
-            
-        round = font['round']    
-        roundleg = font['roundleg']    
+               
         #building an x-height straight by moving the two highest points of the straight down
         sX = font['straightX']
         sX.appendGlyph(font['straight'])
@@ -127,10 +125,11 @@ if offset or offset == 0:
         sD.leftMargin=font['straight'].leftMargin
         sD.mark = (1,.7,0,1)
 
- #building a descender straight by moving the two lowest points of the straight up
+        #building a short crossbar
         scb = font['shortcrossbar']
         scb.appendGlyph(font['crossbar'])
         scb.scale((.75,1))
+        scb.mark = (1,.7,0,1)
 
         ucCrossWidth = int(font["ucCrossbar"].box[2])
         ucStraightWidth = int(font["ucStraight"].box[2])
@@ -157,15 +156,21 @@ if offset or offset == 0:
         c.rightMargin=font['round'].rightMargin - 10
 
         d = font['d']
+<<<<<<< HEAD
         d.appendGlyph(font['round'])
         d.scale((-1,-1))
         d.move((0,xheight))
         d.move((roundWidth,0))
         d.appendComponent('straight',(roundWidth+offset-font['round'].leftMargin-vweight/2,0))
+=======
+        d.appendComponent('round',(roundWidth,int(font["round"].box[3])-overshoot),(-1,-1))
+        d.appendComponent('straight',(roundWidth+offset-font['round'].leftMargin-weight/2,0))
+>>>>>>> 33b7123e0cd5df32d7915c3c748f0a31f3646448
         d.rightMargin=font['straight'].rightMargin
         d.leftMargin=font['round'].rightMargin
 
         e = font['e']
+<<<<<<< HEAD
         e.appendComponent('crossbar',(vweight,xheight-(xheight/3)))
         e.appendComponent('c')
         
@@ -180,6 +185,22 @@ if offset or offset == 0:
         f.leftMargin=font['round'].rightMargin
         f.rightMargin=font['round'].rightMargin - 10
         f.appendComponent('shortcrossbar',(0,xheight),(1,1))
+=======
+        e.appendGlyph(font['round'])
+        e.scale((-1,1))
+        e.move((roundWidth,0))
+        e.appendComponent('crossbar',(0,-xheight/3))
+        e.rightMargin=font['round'].rightMargin - 10
+        e.leftMargin=font['round'].rightMargin
+        
+
+        f = font['f']
+        f.appendGlyph(font['straightX'])
+        f.appendComponent('roundleg',(roundLegWidth,ascender-xheight),(-1,1))
+        f.appendGlyph(font['shortcrossbar'])
+        f.leftMargin=font['straight'].rightMargin
+        f.rightMargin=font['round'].rightMargin - 10
+>>>>>>> 33b7123e0cd5df32d7915c3c748f0a31f3646448
         
         p = font['p']
         p.appendComponent('straightD')
@@ -233,9 +254,7 @@ if offset or offset == 0:
         m.leftMargin=font['straight'].rightMargin
 
         t = font['t']
-        t.appendGlyph(font['roundleg'])
-        t.scale((-1,-1))
-        t.move((roundLegWidth,((xheight/3)*2)))
+        t.appendComponent('roundleg',(roundLegWidth,xheight/3*2),(-1,-1))
         t.appendComponent('straightX')
         t.move((0,(xheight/3)))
         t.appendComponent('crossbar',(-vweight/2,xheight),(1,1))
@@ -247,11 +266,16 @@ if offset or offset == 0:
         B = (int(n.box[2]-n.rightMargin+vweight*0.33),xheight)
         abSlp = mySlope(A[0],A[1],B[0],B[1])
         bhSlp = nSlope(abSlp)
+<<<<<<< HEAD
         Hx = B[0] - math.cos(math.atan(abs(bhSlp))) * vweight * 0.85
         Hy = B[1] + math.sin(math.atan(abs(bhSlp))) * vweight * 0.85
+=======
+        Hx = B[0] - math.cos(math.atan(abs(bhSlp))) * weight * 0.5
+        Hy = B[1] + math.sin(math.atan(abs(bhSlp))) * weight * 0.5
+>>>>>>> 33b7123e0cd5df32d7915c3c748f0a31f3646448
         hYinter = yIntercept(Hx,Hy,abSlp)
         C = (int((B[1] - hYinter)/abSlp), B[1])
-        E = (int((A[0]-(C[0]-A[0]))*1.05),xheight)
+        E = (int((A[0]-(C[0]-A[0]))+weight*0.5),xheight)
         F = (A[0]-(B[0]-A[0]),xheight)
         cYinter = yIntercept(C[0],C[1],abSlp)
         eYinter = yIntercept(E[0],E[1],-abSlp)
