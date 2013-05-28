@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<glyph name="straight" format="1">
-  <advance width="153"/>
+<glyph name="ucStraight" format="1">
+  <advance width="103"/>
   <outline>
     <contour>
-      <point x="0.0" y="-1.0" type="line"/>
-      <point x="103.0" y="-1.0" type="line"/>
-      <point x="103" y="790" type="line"/>
-      <point x="0" y="779" type="line"/>
+      <point x="0.0" y="-1.1" type="line"/>
+      <point x="0.0" y="856.9" type="line"/>
+      <point x="113.3" y="869.0" type="line"/>
+      <point x="113.3" y="-1.1" type="line"/>
     </contour>
   </outline>
   <lib>
@@ -28,21 +28,14 @@
           <dict>
           </dict>
           <key>name</key>
-          <string>straight</string>
+          <string>ucStraight</string>
           <key>unicodes</key>
           <array>
           </array>
           <key>width</key>
-          <integer>153</integer>
+          <integer>103</integer>
         </dict>
       </dict>
-      <key>com.typemytype.robofont.mark</key>
-      <array>
-        <real>1.0</real>
-        <real>0.5</real>
-        <real>0.0</real>
-        <real>1.0</real>
-      </array>
     </dict>
   </lib>
 </glyph>

@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<glyph name="straight" format="1">
-  <advance width="153"/>
+<glyph name="H" format="1">
+  <advance width="575.3"/>
+  <unicode hex="0048"/>
   <outline>
-    <contour>
-      <point x="0.0" y="-1.0" type="line"/>
-      <point x="103.0" y="-1.0" type="line"/>
-      <point x="103" y="790" type="line"/>
-      <point x="0" y="779" type="line"/>
-    </contour>
+    <component base="ucStraight" xOffset="47.0"/>
+    <component base="ucCrossbar" xOffset="98.0" yOffset="435"/>
+    <component base="ucStraight" xOffset="412.0"/>
   </outline>
   <lib>
     <dict>
@@ -28,21 +26,14 @@
           <dict>
           </dict>
           <key>name</key>
-          <string>straight</string>
+          <string>H</string>
           <key>unicodes</key>
           <array>
           </array>
           <key>width</key>
-          <integer>153</integer>
+          <real>575.3</real>
         </dict>
       </dict>
-      <key>com.typemytype.robofont.mark</key>
-      <array>
-        <real>1.0</real>
-        <real>0.5</real>
-        <real>0.0</real>
-        <real>1.0</real>
-      </array>
     </dict>
   </lib>
 </glyph>
