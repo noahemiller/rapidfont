@@ -178,9 +178,9 @@ if offset or offset == 0:
         f = font['f']
         f.appendGlyph(font['straightX'])
         f.appendComponent('roundleg',(roundLegWidth,ascender-xheight),(-1,1))
-        f.appendGlyph(font['shortcrossbar'])
+        f.appendComponent('crossbar',(-vweight/2,xheight))
         f.leftMargin=font['straight'].rightMargin
-        f.rightMargin=font['round'].rightMargin - 10
+        f.rightMargin=font['straight'].rightMargin/2
         
         p = font['p']
         p.appendComponent('straightD')
