@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="H" format="1">
+  <advance width="575.3"/>
+  <unicode hex="0048"/>
+  <outline>
+    <component base="ucStraight" xOffset="47.0"/>
+    <component base="ucCrossbar" xOffset="98.0" yOffset="435"/>
+    <component base="ucStraight" xOffset="412.0"/>
+  </outline>
+  <lib>
+    <dict>
+      <key>com.typemytype.robofont.layerData</key>
+      <dict>
+        <key>background</key>
+        <dict>
+          <key>anchors</key>
+          <array>
+          </array>
+          <key>components</key>
+          <array>
+          </array>
+          <key>contours</key>
+          <array>
+          </array>
+          <key>lib</key>
+          <dict>
+          </dict>
+          <key>name</key>
+          <string>H</string>
+          <key>unicodes</key>
+          <array>
+          </array>
+          <key>width</key>
+          <real>575.3</real>
+        </dict>
+      </dict>
+    </dict>
+  </lib>
+</glyph>

@@ -1,21 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<glyph name="crossbar" format="1">
-  <advance width="500"/>
+<glyph name="straightX" format="1">
+  <advance width="153.0"/>
   <outline>
     <contour>
-<<<<<<< HEAD
-      <point x="332" y="0" type="curve"/>
-      <point x="315" y="-54" type="line"/>
-      <point x="-17" y="-54" type="line"/>
-      <point x="0" y="0" type="line"/>
-      <point x="0" y="0"/>
-      <point x="332" y="0"/>
-=======
-      <point x="342.0" y="464.0" type="line"/>
-      <point x="52.0" y="464.0" type="line"/>
-      <point x="52.0" y="420.0" type="line"/>
-      <point x="342.0" y="420.0" type="line"/>
->>>>>>> 33b7123e0cd5df32d7915c3c748f0a31f3646448
+      <point x="0.0" y="-1.0" type="line"/>
+      <point x="0.0" y="466" type="line"/>
+      <point x="103.0" y="477" type="line"/>
+      <point x="103.0" y="-1.0" type="line"/>
     </contour>
   </outline>
   <lib>
@@ -37,20 +28,20 @@
           <dict>
           </dict>
           <key>name</key>
-          <string>crossbar</string>
+          <string>straightX</string>
           <key>unicodes</key>
           <array>
           </array>
           <key>width</key>
-          <integer>500</integer>
+          <real>153.0</real>
         </dict>
       </dict>
       <key>com.typemytype.robofont.mark</key>
       <array>
-        <real>1.0</real>
-        <real>0.5</real>
-        <real>0.0</real>
-        <real>1.0</real>
+        <integer>1</integer>
+        <real>0.7</real>
+        <integer>0</integer>
+        <integer>1</integer>
       </array>
     </dict>
   </lib>
