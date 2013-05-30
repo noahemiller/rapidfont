@@ -34,7 +34,6 @@
 		<dict>
 			<key>ascending</key>
 			<array>
-<<<<<<< HEAD
 				<string>B</string>
 				<string>C</string>
 				<string>D</string>
@@ -72,8 +71,6 @@
 				<string>shortcrossbar</string>
 				<string>ucStraight</string>
 				<string>ucCrossbar</string>
-=======
->>>>>>> 33b7123e0cd5df32d7915c3c748f0a31f3646448
 				<string>round</string>
 				<string>roundleg</string>
 				<string>straight</string>
@@ -86,7 +83,6 @@
 	</array>
 	<key>public.glyphOrder</key>
 	<array>
-<<<<<<< HEAD
 		<string>B</string>
 		<string>C</string>
 		<string>D</string>
@@ -124,8 +120,6 @@
 		<string>shortcrossbar</string>
 		<string>ucStraight</string>
 		<string>ucCrossbar</string>
-=======
->>>>>>> 33b7123e0cd5df32d7915c3c748f0a31f3646448
 		<string>round</string>
 		<string>roundleg</string>
 		<string>straight</string>
