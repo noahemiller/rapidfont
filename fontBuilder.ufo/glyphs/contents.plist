@@ -2,13 +2,31 @@
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>B</key>
+	<string>B_.glif</string>
+	<key>C</key>
+	<string>C_.glif</string>
 	<key>crossbar</key>
 	<string>crossbar.glif</string>
 	<key>round</key>
 	<string>round.glif</string>
 	<key>roundleg</key>
 	<string>roundleg.glif</string>
+	<key>shortcrossbar</key>
+	<string>shortcrossbar.glif</string>
+	<key>space</key>
+	<string>space.glif</string>
 	<key>straight</key>
 	<string>straight.glif</string>
+	<key>straightD</key>
+	<string>straightD_.glif</string>
+	<key>straightX</key>
+	<string>straightX_.glif</string>
+	<key>ucCrossbar</key>
+	<string>ucCrossbar_.glif</string>
+	<key>ucRound</key>
+	<string>ucRound_.glif</string>
+	<key>ucStraight</key>
+	<string>ucStraight_.glif</string>
 </dict>
 </plist>
