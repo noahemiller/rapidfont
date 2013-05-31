@@ -34,20 +34,14 @@
 		<dict>
 			<key>ascending</key>
 			<array>
-				<string>B</string>
-				<string>C</string>
 				<string>D</string>
 				<string>E</string>
 				<string>F</string>
-				<string>G</string>
 				<string>H</string>
 				<string>I</string>
 				<string>L</string>
-				<string>N</string>
 				<string>O</string>
-				<string>P</string>
 				<string>T</string>
-				<string>U</string>
 				<string>a</string>
 				<string>b</string>
 				<string>c</string>
@@ -68,7 +62,6 @@
 				<string>space</string>
 				<string>straightX</string>
 				<string>straightD</string>
-				<string>shortcrossbar</string>
 				<string>ucStraight</string>
 				<string>ucCrossbar</string>
 				<string>round</string>
@@ -83,47 +76,11 @@
 	</array>
 	<key>public.glyphOrder</key>
 	<array>
-		<string>B</string>
-		<string>C</string>
-		<string>D</string>
-		<string>E</string>
-		<string>F</string>
-		<string>G</string>
-		<string>H</string>
-		<string>I</string>
-		<string>L</string>
-		<string>N</string>
-		<string>O</string>
-		<string>P</string>
-		<string>T</string>
-		<string>U</string>
-		<string>a</string>
-		<string>b</string>
-		<string>c</string>
-		<string>d</string>
-		<string>e</string>
-		<string>f</string>
-		<string>h</string>
-		<string>i</string>
-		<string>l</string>
-		<string>m</string>
-		<string>n</string>
-		<string>o</string>
-		<string>p</string>
-		<string>q</string>
-		<string>t</string>
-		<string>u</string>
-		<string>v</string>
-		<string>space</string>
-		<string>straightX</string>
-		<string>straightD</string>
-		<string>shortcrossbar</string>
-		<string>ucStraight</string>
-		<string>ucCrossbar</string>
 		<string>round</string>
 		<string>roundleg</string>
 		<string>straight</string>
 		<string>crossbar</string>
+		<string>ucRound</string>
 	</array>
 </dict>
 </plist>

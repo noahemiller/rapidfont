@@ -37,7 +37,7 @@ def lineX(mp, cp, mq, cq):
     return lineX
 
 #testing to make sure the required components are present
-meta = ['round','roundleg','straight','crossbar']
+meta = ['round','roundleg','straight','crossbar','ucRound']
 for glyph in meta:
     if glyph not in font:
         #we exit here ... possibly expand to create blank component glyphs and promt user to create contours.
@@ -55,7 +55,7 @@ if offset or offset == 0:
     except ValueError:
         Message("Numbers only.")
     else:
-        vweight = int(font["straight"].box[2])
+        weight = int(font["straight"].box[2])
         hweight = int(60)
         roundWidth=int(font["round"].box[2])
         roundLegWidth=int(font["roundleg"].box[2])
@@ -64,8 +64,10 @@ if offset or offset == 0:
         ascender = font.info.ascender
         capheight = font.info.capHeight
         overshoot = abs(int(font["round"].box[1]))
-
-        buildG = ['B','C','D','E','F','G','H','I','L','N','O','P','T','U','a','b','c','d','e','f','h','i','l','m','n','o','p','q','t','u','v','space','straightX','straightD','shortcrossbar','ucStraight','ucCrossbar']
+        strtRM = font['straight'].rightMargin
+        rndRM = font['round'].rightMargin
+        rndlgRM = font['roundleg'].rightMargin
+        buildG = ['D','E','F','H','I','L','O','T','a','b','c','d','e','f','h','i','l','m','n','o','p','q','t','u','v','space','straightX','straightD','ucStraight','ucCrossbar']
 
         for glyph in buildG:
             font.newGlyph(glyph)
@@ -88,23 +90,52 @@ if offset or offset == 0:
         pts[1].y -= (ascender - xheight)
         for contour in sX:
             contour.update()
-        sX.rightMargin=font['straight'].rightMargin
-        sX.leftMargin=font['straight'].leftMargin
+        sX.rightMargin=strtRM
+        sX.leftMargin=0
         sX.mark = (1,.7,0,1)
 
 
-#building an uppercase vertical by scaling the lowercase straight by 10% and moving top 2 points down
-        
+        #building an uppercase vertical by scaling the lowercase straight by 10% and moving top 2 points down
         ucStraight = font['ucStraight']
-        ucStraight.appendComponent('straight', (0,0),(1.1, 1.1))
+        ucStraight.appendGlyph(font['straight'])
+        pts = [0,0]
+        ptsW = [0,0]
+        for contour in ucStraight:
+            for point in contour.points:
+                if point == contour.points[0]:
+                    pts[0] = point
+                    pts[1] = point
+                    ptsW[0] = point
+                    ptsW[1] = point
+                if point.y > pts[0].y:
+                    pts[1] = pts[0]
+                    pts[0] = point
+                elif point.y >= pts[1].y:
+                    pts[1] = point
+                if point.x > ptsW[0].y:
+                    ptsW[1] = ptsW[0]
+                    ptsW[0] = point
+                elif point.x >= ptsW[1].x:
+                    ptsW[1] = point
+        pts[0].y -= (ascender - capheight)
+        pts[1].y -= (ascender - capheight)
+        ptsW[0].x = int(ptsW[0].x*1.1)
+        ptsW[1].x = int(ptsW[1].x*1.1)
+        for contour in sX:
+            contour.update()     
+        ucStraight.mark = (1,.7,0,1)
+        ucStraightWidth = ptsW[0].x
+        if font['round'].rightMargin !=0:
+            ucStraight.rightMargin = int((font['ucRound'].rightMargin * font['straight'].rightMargin) / font['round'].rightMargin)
 
         ucCrossbar = font['ucCrossbar']
-        ucCrossbar.appendComponent('crossbar', (0,0),(1.1, 1.1))
+        ucCrossbar.appendComponent('crossbar', (0,0),(1.4, 1.1))
+        ucCrossbar.mark = (1,.7,0,1)
+        ucCrossWidth = int(font['ucCrossbar'].box[2]) + int(font['ucCrossbar'].box[0])
                 
         #building a descender straight by moving the two lowest points of the straight up
         sD = font['straightD']
-        sD.appendGlyph(font['straight'])
-        sD.move((0,-(ascender-xheight)))
+        sD.appendGlyph(font['straight'],(0,-(ascender-xheight)))
         pts = [0,0]
         for contour in sD:
             for point in contour.points:
@@ -122,77 +153,61 @@ if offset or offset == 0:
         for contour in sD:
             contour.update()
         sD.rightMargin=font['straight'].rightMargin
-        sD.leftMargin=font['straight'].leftMargin
+        sD.leftMargin=0
         sD.mark = (1,.7,0,1)
-
-        #building a short crossbar
-        scb = font['shortcrossbar']
-        scb.appendGlyph(font['crossbar'])
-        scb.scale((.75,1))
-        scb.mark = (1,.7,0,1)
-
-        ucCrossWidth = int(font["ucCrossbar"].box[2])
-        ucStraightWidth = int(font["ucStraight"].box[2])
+        
+        
+        #Proper glyph construction starts here ****
+        
         space = font['space']
         space.width = roundWidth
 
         a = font['a']
-        a.appendGlyph(font['round'])
-        a.scale((-1,1))
-        a.move((roundWidth,0))
-        a.appendComponent('straightX',(roundWidth+offset-font['round'].leftMargin-vweight/2,0))
-        a.leftMargin=font['round'].rightMargin
-        a.rightMargin=font['straight'].rightMargin
+        a.appendComponent('round',(roundWidth,0),(-1,1))
+        a.appendComponent('straightX',(roundWidth+offset-font['round'].leftMargin-weight/2,0))
+        a.leftMargin=rndRM
+        a.rightMargin=strtRM
         
         b = font['b']
         b.appendComponent('straight')
-        b.appendComponent('round',(vweight/2+offset-font['round'].leftMargin,0))
-        b.rightMargin=font['round'].rightMargin
-        b.leftMargin=font['straight'].rightMargin
+        b.appendComponent('round',(weight/2+offset-font['round'].leftMargin,0))
+        b.rightMargin=rndRM
+        b.leftMargin=strtRM
         
         c = font['c']
         c.appendComponent('round',(0,xheight),(-1,-1))
         c.leftMargin=font['round'].rightMargin
-        c.rightMargin=font['round'].rightMargin - 10
+        c.rightMargin=font['round'].rightMargin - 20
 
         d = font['d']
-        d.appendGlyph(font['round'])
-        d.scale((-1,-1))
-        d.move((0,xheight))
-        d.move((roundWidth,0))
-        d.appendComponent('straight',(roundWidth+offset-font['round'].leftMargin-vweight/2,0))
         d.appendComponent('round',(roundWidth,int(font["round"].box[3])-overshoot),(-1,-1))
-        d.appendComponent('straight',(roundWidth+offset-font['round'].leftMargin-vweight/2,0))
+        d.appendComponent('straight',(roundWidth+offset-font['round'].leftMargin-weight/2,0))
         d.rightMargin=font['straight'].rightMargin
         d.leftMargin=font['round'].rightMargin
 
         e = font['e']
-        e.appendComponent('crossbar',(vweight,xheight-(xheight/3)))
+        e.appendComponent('crossbar',(weight,xheight-(xheight/3)))
         e.appendComponent('c')
-        e.scale((-1,1))
-        e.move((roundWidth,0))
-        e.rightMargin=font['round'].rightMargin - 10
+        e.rightMargin=font['round'].rightMargin - 20
         e.leftMargin=font['round'].rightMargin
         
 
         f = font['f']
-        f.appendGlyph(font['straightX'])
+        f.appendComponent('straightX')
         f.appendComponent('roundleg',(roundLegWidth,ascender-xheight),(-1,1))
-        f.appendComponent('crossbar',(-vweight/2,xheight))
-        f.leftMargin=font['straight'].rightMargin
-        f.rightMargin=font['straight'].rightMargin/2
+        f.appendComponent('crossbar',(-weight/2,xheight))
+        f.leftMargin=font['straight'].rightMargin - weight/2
+        f.rightMargin=-50
         
         p = font['p']
         p.appendComponent('straightD')
-        p.appendComponent('round',(vweight/2+offset-font['round'].leftMargin,0))
+        p.appendComponent('round',(weight/2+offset-font['round'].leftMargin,0))
         p.rightMargin=font['round'].rightMargin
         p.leftMargin=font['straight'].rightMargin
 
         q = font['q']
-        q.appendGlyph(font['round'])
-        q.scale((-1,1))
-        q.move((roundWidth,0))
-        q.appendComponent('straightD',(roundWidth+offset-font['round'].leftMargin-vweight/2,0))
+        q.appendComponent('round',(roundWidth,int(font["round"].box[3])-overshoot),(-1,-1))
+        q.appendComponent('straightD',(roundWidth+offset-font['round'].leftMargin-weight/2,0))
         q.rightMargin=font['straight'].rightMargin
         q.leftMargin=font['round'].rightMargin
 
@@ -204,60 +219,64 @@ if offset or offset == 0:
 
         
         h = font['h']
-        h.appendGlyph(font['straight'])
-        h.appendComponent('roundleg',(vweight+offset,0))
+        h.appendComponent('straight')
+        h.appendComponent('roundleg',(weight+offset,0))
         h.rightMargin=font['roundleg'].rightMargin
         h.leftMargin=font['straight'].rightMargin
         
         i = font['i']
-        i.appendGlyph(font['straightX'])
+        i.appendComponent('straightX')
         i.rightMargin=font['straight'].rightMargin
         i.leftMargin=font['straight'].rightMargin
         
         l = font['l']
-        l.appendGlyph(font['straight'])
+        l.appendComponent('straight')
         l.rightMargin=font['straight'].rightMargin
         l.leftMargin=font['straight'].rightMargin
         
         
         n = font['n']
-        n.appendGlyph(font['straightX'])
-        n.appendComponent('roundleg',(vweight+offset,0))
+        n.appendComponent('straightX')
+        n.appendComponent('roundleg',(weight+offset,0))
         n.rightMargin=font['roundleg'].rightMargin
         n.leftMargin=font['straight'].rightMargin
         
         m = font['m']
-        m.appendGlyph(font['straightX'])
-        m.appendComponent('roundleg',(vweight+offset*3,0))
-        m.appendComponent('roundleg',(vweight+font['roundleg'].box[2]+offset*10,0))
+        m.appendComponent('straightX')
+        m.appendComponent('roundleg',(weight+offset*3,0))
+        m.appendComponent('roundleg',(weight+font['roundleg'].box[2]+offset*10,0))
         m.rightMargin=font['roundleg'].rightMargin
         m.leftMargin=font['straight'].rightMargin
 
         t = font['t']
-        t.appendComponent('roundleg',(roundLegWidth,xheight/3*2),(-1,-1))
-        t.appendComponent('straightX')
-        t.move((0,(xheight/3)))
-        t.appendComponent('crossbar',(-vweight/2,xheight),(1,1))
-        t.leftMargin=font['straight'].rightMargin
-        t.rightMargin=font['straight'].rightMargin
+        t.appendComponent('roundleg',(roundLegWidth,xheight),(-1,-1))
+        t.appendComponent('straightX',(0,xheight/3))
+        t.appendComponent('crossbar',(-weight/2,xheight))
+        t.leftMargin=font['straight'].rightMargin - weight/2
+        t.rightMargin=0
+        
+        u = font['u']
+        u.appendComponent('n',(0,xheight),(-1,-1))
+        u.rightMargin = n.leftMargin
+        u.leftMargin = n.rightMargin
 
         v = font['v']
         A = (int((n.box[2]-n.rightMargin)/2),-overshoot)
-        B = (int(n.box[2]-n.rightMargin+vweight*0.33),xheight)
+        B = (int(n.box[2]-n.rightMargin+weight*0.33),xheight)
         abSlp = mySlope(A[0],A[1],B[0],B[1])
         bhSlp = nSlope(abSlp)
-        Hx = B[0] - math.cos(math.atan(abs(bhSlp))) * vweight * 0.85
-        Hy = B[1] + math.sin(math.atan(abs(bhSlp))) * vweight * 0.85
-        Hx = B[0] - math.cos(math.atan(abs(bhSlp))) * vweight * 0.5
-        Hy = B[1] + math.sin(math.atan(abs(bhSlp))) * vweight * 0.5
+        Hx = B[0] - math.cos(math.atan(abs(bhSlp))) * weight * 0.85
+        Hy = B[1] + math.sin(math.atan(abs(bhSlp))) * weight * 0.85
+        Hx = B[0] - math.cos(math.atan(abs(bhSlp))) * weight * 0.5
+        Hy = B[1] + math.sin(math.atan(abs(bhSlp))) * weight * 0.5
         hYinter = yIntercept(Hx,Hy,abSlp)
         C = (int((B[1] - hYinter)/abSlp), B[1])
-        E = (int((A[0]-(C[0]-A[0]))+vweight*0.5),xheight)
+        E = (int((A[0]-(C[0]-A[0]))+weight*0.5),xheight)
         F = (A[0]-(B[0]-A[0]),xheight)
         cYinter = yIntercept(C[0],C[1],abSlp)
         eYinter = yIntercept(E[0],E[1],-abSlp)
         D = lineX(abSlp,cYinter,-abSlp,eYinter)
-        D[1] = int(D[1] - vweight*0.05)
+        D[1] = int(D[1] - weight*0.05)
         pen = v.getPen()
         pen.moveTo(A)
         pen.lineTo(B)
@@ -270,73 +289,63 @@ if offset or offset == 0:
         v.leftMargin = 0
         v.rightMargin = 0
         
+        D = font ['D']
+        D.appendComponent('ucStraight',(weight+offset,0))
+        D.appendComponent('ucRound',(roundWidth+weight+offset,0))
+        D.rightMargin = font['ucRound'].rightMargin
+        D.leftMargin = ucStraight.rightMargin
+        
+        E = font['E']
+        E.appendComponent('ucStraight',(weight+offset,0))
+        E.appendComponent('ucCrossbar',(weight+offset+(weight/2),(capheight)),(0.9,1))
+        E.appendComponent('ucCrossbar',(weight+offset+(weight/2),(capheight/2)+ hweight),(0.7,1))
+        E.appendComponent('ucCrossbar',(weight+offset+(weight/2),hweight))
+        E.rightMargin = ucStraight.rightMargin -15
+        E.leftMargin = ucStraight.rightMargin
+        
+        F = font['F']
+        F.appendComponent('ucStraight',(weight+offset,0))
+        F.appendComponent('ucCrossbar',(weight+offset+(weight/2),(capheight)),(0.9,1))
+        F.appendComponent('ucCrossbar',(weight+offset+(weight/2),(capheight/2)+ hweight),(0.7,1))
+        F.rightMargin = ucStraight.rightMargin -15
+        F.leftMargin = ucStraight.rightMargin
+                
+        H = font['H']
+        H.appendComponent('ucStraight',(weight+offset,0))
+        H.appendComponent('ucCrossbar',(weight+offset+(weight/2),(capheight/2)+hweight))
+        H.appendComponent('ucStraight', ((ucCrossWidth+weight+offset),0),(1,1))
+        H.rightMargin = ucStraight.rightMargin
+        H.leftMargin = ucStraight.rightMargin
+
+        I = font['I']
+        I.appendComponent('ucStraight',(weight+offset,0))
+        I.rightMargin = ucStraight.rightMargin
+        I.leftMargin = ucStraight.rightMargin
+        
+        L = font['L']
+        L.appendComponent('ucStraight',(weight+offset,0))
+        L.appendComponent('ucCrossbar',(weight+offset+(weight/2),hweight),(0.9,1))
+        L.rightMargin = ucStraight.rightMargin -15
+        L.leftMargin = ucStraight.rightMargin
+        
+        O = font['O']
+        O.appendComponent('ucRound',(roundWidth,capheight),(-1,-1))
+        O.appendComponent('ucRound',(roundWidth+offset,0))
+        O.rightMargin = font['ucRound'].rightMargin
+        O.leftMargin = font['ucRound'].rightMargin
+
+        T = font['T']
+        T.appendComponent('ucStraight')
+        T.appendComponent('ucCrossbar',(ucStraightWidth/2 - ucCrossWidth*1.3/2,capheight),(1.3,1))       
+        T.rightMargin = 0
+        T.leftMargin = 0
+        
+        
         for glyph in buildG:
             for comp in font[glyph].components:
                 comp.decompose()
             for cont in font[glyph]:
                 cont.clockwise = True
-                
-        u = font['u']
-        u.appendGlyph(font['n'])
-        u.scale((-1,-1))
-        u.move((0,xheight))
-        u.rightMargin = n.leftMargin
-        u.leftMargin = n.rightMargin
-
-        D = font ['D']
-        D.appendComponent('ucStraight',(vweight+offset,0))
-        D.appendComponent('ucRound',(roundWidth+vweight+offset,0))
-        D.rightMargin = n.leftMargin
-        D.leftMargin = n.rightMargin
-        
-        E = font['E']
-        E.appendComponent('ucStraight',(vweight+offset,0))
-        E.appendComponent('ucCrossbar',(vweight+offset+(vweight/2),(capheight)))
-        E.appendComponent('ucCrossbar',(vweight+offset+(vweight/2),(capheight/2)+ hweight))
-        E.appendComponent('ucCrossbar',(vweight+offset+(vweight/2),hweight))
-        E.rightMargin = n.leftMargin
-        E.leftMargin = n.rightMargin
-        
-        F = font['F']
-        F.appendComponent('ucStraight',(vweight+offset,0))
-        F.appendComponent('ucCrossbar',(vweight+offset+(vweight/2),(capheight)))
-        F.appendComponent('ucCrossbar',(vweight+offset+(vweight/2),(capheight/2)+ hweight))
-        F.rightMargin = n.leftMargin
-        F.leftMargin = n.rightMargin
-                
-        H = font['H']
-        H.appendComponent('ucStraight',(vweight+offset,0))
-        H.appendComponent('ucCrossbar',(vweight+offset+(vweight/2),(capheight/2)+hweight))
-        H.appendComponent('ucStraight', ((ucCrossWidth+vweight+offset),0),(1,1))
-        H.rightMargin = n.leftMargin
-        H.leftMargin = n.rightMargin
-
-        I = font['I']
-        I.appendComponent('ucStraight',(vweight+offset,0))
-        pts[1].y += abs(pts[0].y - descender)
-        I.rightMargin = n.leftMargin
-        I.leftMargin = n.rightMargin
-        
-        L = font['L']
-        L.appendComponent('ucStraight',(vweight+offset,0))
-        L.appendComponent('ucCrossbar',(vweight+offset+(vweight/2),hweight))
-        L.rightMargin = n.leftMargin
-        L.leftMargin = n.rightMargin
-        
-        O = font['O']
-        O.appendComponent('ucRound',(roundWidth,capheight),(-1,-1))
-        O.appendComponent('ucRound',(roundWidth+offset,0))
-        O.rightMargin=font['ucRound'].rightMargin
-        O.leftMargin=font['ucRound'].rightMargin
-        O.rightMargin = n.leftMargin
-        O.leftMargin = n.rightMargin
-
-        T = font['T']
-        T.appendComponent('ucStraight',(vweight+offset,0))
-        T.appendComponent('ucCrossbar',((-(ucCrossWidth/2))+(vweight+offset)+(vweight/2),(capheight)))       
-        T.rightMargin = n.leftMargin
-        T.leftMargin = n.rightMargin
-
         
         mySorted = buildG + meta
         font.glyphOrder = mySorted
