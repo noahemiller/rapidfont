@@ -18,7 +18,7 @@ def mySlope(px,py,qx,qy):
     return theSlope
 
 def yIntercept(px, py, mp):
-    yInter = py - mp * px
+    yInter = py - (mp * px)
     return yInter
     
 def nSlope(mp):
@@ -35,6 +35,7 @@ def lineX(mp, cp, mq, cq):
         myY = int(mp * myX + cp)
         lineX = [myX, myY]
     return lineX
+
 
 #testing to make sure the required components are present
 meta = ['round','roundleg','straight','crossbar','ucRound']
@@ -55,7 +56,7 @@ if offset or offset == 0:
     except ValueError:
         Message("Numbers only.")
     else:
-        weight = int(font["straight"].box[2])
+        weight = sweight = xweight = int(font["straight"].box[2])
         hweight = int(60)
         roundWidth=int(font["round"].box[2])
         roundLegWidth=int(font["roundleg"].box[2])
@@ -67,94 +68,92 @@ if offset or offset == 0:
         strtRM = font['straight'].rightMargin
         rndRM = font['round'].rightMargin
         rndlgRM = font['roundleg'].rightMargin
+        slant = False
         buildG = ['D','E','F','H','I','L','O','T','a','b','c','d','e','f','h','i','l','m','n','o','p','q','t','u','v','space','straightX','straightD','ucStraight','ucCrossbar']
 
         for glyph in buildG:
             font.newGlyph(glyph)
                
-        #building an x-height straight by moving the two highest points of the straight down
-        sX = font['straightX']
-        sX.appendGlyph(font['straight'])
-        pts = [0,0]
-        for contour in sX:
-            for point in contour.points:
-                if point == contour.points[0]:
-                    pts[0] = point
-                    pts[1] = point
-                if point.y > pts[0].y:
-                    pts[1] = pts[0]
-                    pts[0] = point
-                elif point.y >= pts[1].y:
-                    pts[1] = point
-        pts[0].y -= (ascender - xheight)
-        pts[1].y -= (ascender - xheight)
-        for contour in sX:
-            contour.update()
-        sX.rightMargin=strtRM
-        sX.leftMargin=0
-        sX.mark = (1,.7,0,1)
-
-
-        #building an uppercase vertical by scaling the lowercase straight by 10% and moving top 2 points down
+        #building an x-height, desender, and upper-case straights
         ucStraight = font['ucStraight']
-        ucStraight.appendGlyph(font['straight'])
+        sX = font['straightX']
+        sD = font['straightD']
+        sD.appendGlyph(font['straight'])
         pts = [0,0]
+        ptsB = [0,0]
         ptsW = [0,0]
-        for contour in ucStraight:
+        for contour in sD:
             for point in contour.points:
                 if point == contour.points[0]:
-                    pts[0] = point
-                    pts[1] = point
-                    ptsW[0] = point
-                    ptsW[1] = point
+                    pts[0] =  pts[1] = ptsB[0] = ptsB[1] = ptsW[0] = ptsW[1] = point
                 if point.y > pts[0].y:
                     pts[1] = pts[0]
                     pts[0] = point
                 elif point.y >= pts[1].y:
                     pts[1] = point
-                if point.x > ptsW[0].y:
-                    ptsW[1] = ptsW[0]
-                    ptsW[0] = point
-                elif point.x >= ptsW[1].x:
-                    ptsW[1] = point
-        pts[0].y -= (ascender - capheight)
-        pts[1].y -= (ascender - capheight)
-        ptsW[0].x = int(ptsW[0].x*1.1)
-        ptsW[1].x = int(ptsW[1].x*1.1)
-        for contour in sX:
-            contour.update()     
+                if point.y < ptsB[0].y:
+                    ptsB[1] = pts[0]
+                    ptsB[0] = point
+                elif point.y <= ptsB[1].y:
+                    ptsB[1] = point
+        ptsW[0] = pts[0] if pts[0].x > pts[1].x else pts[1]
+        ptsW[1] = ptsB[0] if ptsB[0].x > ptsB[1].x else ptsB[1]
+        ptL = ptsB[0] if ptsB[0].x < ptsB[1].x else ptsB[1]
+        if ptsW[0].x < ptsW[1].x:
+            ptsW[0], ptsW[1] = ptsW[1], ptsW[0]
+        if ptsW[0].x != ptsW[1].x:  #slanted straight
+            slant = True
+            sweight = abs(ptsB[1].x - ptsB[0].x) #not quite true weight
+            strSlope = mySlope(ptsW[0].x,ptsW[0].y,ptsW[1].x,ptsW[1].y)
+            YinterR = yIntercept(ptsW[0].x, ptsW[0].y, strSlope)
+            YinterL = yIntercept(ptL.x, ptL.y, strSlope)
+            ptsInter = [YinterR if pts[0].x > pts[1].x else YinterL, YinterL if pts[0].x > pts[1].x else YinterR]
+            pts[0].y -= (ascender - capheight)
+            pts[1].y -= (ascender - capheight)
+            pts[0].x = int((pts[0].y - ptsInter[0]) / strSlope)
+            pts[1].x = int((pts[1].y - ptsInter[1]) / strSlope)
+            ucStraight.appendGlyph(sD) #still needs 10% scaling
+            pts[0].y -= (capheight - xheight)
+            pts[1].y -= (capheight - xheight)
+            pts[0].x = int((pts[0].y - ptsInter[0]) / strSlope)
+            pts[1].x = int((pts[1].y - ptsInter[1]) / strSlope)
+            sD.update()
+            sX.appendGlyph(sD)
+            xweight = int(sX.box[2])
+            ptsInter = [YinterR if ptsB[0].x > ptsB[1].x else YinterL, YinterL if ptsB[0].x > ptsB[1].x else YinterR]
+            ptsB[0].y += descender - ptsB[0].y
+            ptsB[1].y += descender - ptsB[1].y
+            ptsB[0].x = int((ptsB[0].y - ptsInter[0]) / strSlope)
+            ptsB[1].x = int((ptsB[1].y - ptsInter[1]) / strSlope)
+            sD.update()
+        else:
+            pts[0].y -= (ascender - capheight)
+            pts[1].y -= (ascender - capheight)
+            sD.update()
+            ucStraight.appendGlyph(sD)
+            ucStraight.scale((1.1,1))            
+            pts[0].y -= (capheight - xheight)
+            pts[1].y -= (capheight - xheight)
+            sD.update()
+            sX.appendGlyph(sD)
+            ptsB[0].y += descender - ptsB[0].y
+            ptsB[1].y += descender - ptsB[1].y
+            sD.update()
         ucStraight.mark = (1,.7,0,1)
         ucStraightWidth = ptsW[0].x
         if font['round'].rightMargin !=0:
             ucStraight.rightMargin = int((font['ucRound'].rightMargin * font['straight'].rightMargin) / font['round'].rightMargin)
+        sD.rightMargin=font['straight'].rightMargin
+        sD.leftMargin=0
+        sD.mark = (1,.7,0,1)        
+        sX.rightMargin=strtRM
+        sX.leftMargin=0
+        sX.mark = (1,.7,0,1)
 
         ucCrossbar = font['ucCrossbar']
         ucCrossbar.appendComponent('crossbar', (0,0),(1.4, 1.1))
         ucCrossbar.mark = (1,.7,0,1)
         ucCrossWidth = int(font['ucCrossbar'].box[2]) + int(font['ucCrossbar'].box[0])
-                
-        #building a descender straight by moving the two lowest points of the straight up
-        sD = font['straightD']
-        sD.appendGlyph(font['straight'],(0,-(ascender-xheight)))
-        pts = [0,0]
-        for contour in sD:
-            for point in contour.points:
-                if point == contour.points[0]:
-                    pts[0] = point
-                    pts[1] = point
-                if point.y < pts[0].y:
-                    pts[1] = pts[0]
-                    pts[0] = point
-                elif point.y <= pts[1].y:
-                    pts[1] = point
-        if pts[0].y < descender:
-            pts[1].y += abs(pts[0].y - descender)
-            pts[0].y += abs(pts[0].y - descender)
-        for contour in sD:
-            contour.update()
-        sD.rightMargin=font['straight'].rightMargin
-        sD.leftMargin=0
-        sD.mark = (1,.7,0,1)
         
         
         #Proper glyph construction starts here ****
@@ -163,14 +162,14 @@ if offset or offset == 0:
         space.width = roundWidth
 
         a = font['a']
-        a.appendComponent('round',(roundWidth,0),(-1,1))
+        a.appendComponent('round',(roundWidth,int(font["round"].box[3])-overshoot),(-1,-1))
         a.appendComponent('straightX',(roundWidth+offset-font['round'].leftMargin-weight/2,0))
         a.leftMargin=rndRM
         a.rightMargin=strtRM
         
         b = font['b']
         b.appendComponent('straight')
-        b.appendComponent('round',(weight/2+offset-font['round'].leftMargin,0))
+        b.appendComponent('round',(sweight/2+offset-font['round'].leftMargin,0))
         b.rightMargin=rndRM
         b.leftMargin=strtRM
         
@@ -186,22 +185,29 @@ if offset or offset == 0:
         d.leftMargin=font['round'].rightMargin
 
         e = font['e']
-        e.appendComponent('crossbar',(weight,xheight-(xheight/3)))
+        e.appendComponent('crossbar',(sweight,xheight-(xheight/3)))
         e.appendComponent('c')
         e.rightMargin=font['round'].rightMargin - 20
         e.leftMargin=font['round'].rightMargin
         
 
         f = font['f']
+        if slant:
+            sangle = -math.degrees(math.atan(strSlope))
+            f.appendGlyph(font['roundleg'], (0,ascender-xheight))
+            f.scale((-1,1))
+            f.move((roundLegWidth/2,0))
+            f.skew(2*sangle)
+        else:
+            f.appendComponent('roundleg',(roundLegWidth,ascender-xheight),(-1,1))
         f.appendComponent('straightX')
-        f.appendComponent('roundleg',(roundLegWidth,ascender-xheight),(-1,1))
-        f.appendComponent('crossbar',(-weight/2,xheight))
+        f.appendComponent('crossbar',(-sweight/2,xheight))
         f.leftMargin=font['straight'].rightMargin - weight/2
         f.rightMargin=-50
         
         p = font['p']
         p.appendComponent('straightD')
-        p.appendComponent('round',(weight/2+offset-font['round'].leftMargin,0))
+        p.appendComponent('round',(sweight/2+offset-font['round'].leftMargin,0))
         p.rightMargin=font['round'].rightMargin
         p.leftMargin=font['straight'].rightMargin
 
@@ -220,7 +226,7 @@ if offset or offset == 0:
         
         h = font['h']
         h.appendComponent('straight')
-        h.appendComponent('roundleg',(weight+offset,0))
+        h.appendComponent('roundleg',(xweight+offset,0))
         h.rightMargin=font['roundleg'].rightMargin
         h.leftMargin=font['straight'].rightMargin
         
@@ -237,21 +243,21 @@ if offset or offset == 0:
         
         n = font['n']
         n.appendComponent('straightX')
-        n.appendComponent('roundleg',(weight+offset,0))
+        n.appendComponent('roundleg',(xweight+offset,0))
         n.rightMargin=font['roundleg'].rightMargin
         n.leftMargin=font['straight'].rightMargin
         
         m = font['m']
         m.appendComponent('straightX')
-        m.appendComponent('roundleg',(weight+offset*3,0))
-        m.appendComponent('roundleg',(weight+font['roundleg'].box[2]+offset*10,0))
+        m.appendComponent('roundleg',(xweight+offset*3,0))
+        m.appendComponent('roundleg',(xweight+font['roundleg'].box[2]+offset*10,0))
         m.rightMargin=font['roundleg'].rightMargin
         m.leftMargin=font['straight'].rightMargin
 
         t = font['t']
         t.appendComponent('roundleg',(roundLegWidth,xheight),(-1,-1))
         t.appendComponent('straightX',(0,xheight/3))
-        t.appendComponent('crossbar',(-weight/2,xheight))
+        t.appendComponent('crossbar',(-sweight/2,xheight))
         t.leftMargin=font['straight'].rightMargin - weight/2
         t.rightMargin=0
         
@@ -261,22 +267,24 @@ if offset or offset == 0:
         u.leftMargin = n.rightMargin
 
         v = font['v']
+        soff = (xheight / strSlope) if slant else 0
         A = (int((n.box[2]-n.rightMargin)/2),-overshoot)
         B = (int(n.box[2]-n.rightMargin+weight*0.33),xheight)
         abSlp = mySlope(A[0],A[1],B[0],B[1])
         bhSlp = nSlope(abSlp)
-        Hx = B[0] - math.cos(math.atan(abs(bhSlp))) * weight * 0.85
-        Hy = B[1] + math.sin(math.atan(abs(bhSlp))) * weight * 0.85
-        Hx = B[0] - math.cos(math.atan(abs(bhSlp))) * weight * 0.5
-        Hy = B[1] + math.sin(math.atan(abs(bhSlp))) * weight * 0.5
+        Hx = B[0] - math.cos(math.atan(abs(bhSlp))) * sweight * 0.85
+        Hy = B[1] + math.sin(math.atan(abs(bhSlp))) * sweight * 0.85
+        Hx = B[0] - math.cos(math.atan(abs(bhSlp))) * sweight * 0.5
+        Hy = B[1] + math.sin(math.atan(abs(bhSlp))) * sweight * 0.5
         hYinter = yIntercept(Hx,Hy,abSlp)
-        C = (int((B[1] - hYinter)/abSlp), B[1])
-        E = (int((A[0]-(C[0]-A[0]))+weight*0.5),xheight)
-        F = (A[0]-(B[0]-A[0]),xheight)
-        cYinter = yIntercept(C[0],C[1],abSlp)
-        eYinter = yIntercept(E[0],E[1],-abSlp)
-        D = lineX(abSlp,cYinter,-abSlp,eYinter)
-        D[1] = int(D[1] - weight*0.05)
+        C = (int((B[1] - hYinter) / abSlp), B[1])
+        E = (int((A[0] - (C[0] - A[0])) + sweight * 0.5 + soff), xheight)
+        F = (A[0] - (B[0] - A[0]) + soff, xheight)
+        negabSlp = mySlope(F[0],F[1],A[0],A[1]) if slant else -abSlp
+        cYinter = yIntercept(C[0], C[1], abSlp)
+        eYinter = yIntercept(E[0], E[1], negabSlp)
+        D = lineX(abSlp, cYinter, negabSlp, eYinter)
+        D[1] = int(D[1] - sweight * 0.05)
         pen = v.getPen()
         pen.moveTo(A)
         pen.lineTo(B)
